@@ -1,0 +1,192 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bar Companion Docs</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="top-nav">
+        <div class="brand">Bar Companion Docs</div>
+        <div class="links">
+          <a href="index.html">Home</a>
+          <a href="web.html">Web Routes</a>
+          <a href="api.html">API Reference</a>
+        </div>
+      </div>
+      <header class="hero">
+        <div class="hero-grid">
+          <div>
+            <p class="kicker">Ethan Katte</p>
+            <h1>Bar Companion</h1>
+            <div class="hero-actions">
+              <a class="btn" href="api.html">API Reference</a>
+              <a class="btn ghost" href="web.html">Web Routes</a>
+            </div>
+          </div>
+          <div class="hero-card">
+            <h2>Quickstart</h2>
+            <ul>
+              <li>Install Python deps from <span class="mono">requirements.txt</span></li>
+              <li>Run <span class="mono">python app.py</span> in <span class="mono">bar_companion</span></li>
+              <li>Ensure <span class="mono">secrets.json</span> contains <span class="mono">OPENAI_KEY</span></li>
+              <li>SQLite DB at <span class="mono">./database/bar_companion.db</span></li>
+              <li>Uploads stored under <span class="mono">./database_images</span></li>
+            </ul>
+            <img class="hero-image" src="home_screen.png" alt="Bar Companion home screen" />
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section id="description" class="section reveal">
+          <div class="section-title">
+            <h2>Description</h2>
+          </div>
+          <div class="grid-1">
+            <div class="panel">
+              <p>
+                The Bar Companion is a Flask-based web app for managing a spirits collection and tasting experiences: it stores bottle inventory in a SQLite database, supports adding bottles with images and descriptions, tracks users and their reviews/tasting notes, and exposes pages/APIs for inventory browsing, user profiles, and event-based tastings (with client and console views for running events).
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section id="capabilities" class="section reveal">
+          <div class="section-title">
+            <h2>Capabilities</h2>
+            <p>What the app supports today.</p>
+          </div>
+          <div class="cap-grid">
+            <div class="panel">
+              <h3>Inventory and Bottles</h3>
+              <ul>
+                <li>Browse and filter inventory</li>
+                <li>Add bottles with images and descriptions</li>
+                <li>Auto-generate bottle descriptions</li>
+                <li>Mark bottles unavailable</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Users and Reviews</h3>
+              <ul>
+                <li>Create users with profile photos</li>
+                <li>Collect bottle reviews and scores</li>
+                <li>Attach tasting notes to reviews</li>
+                <li>Aggregate community notes per bottle</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Events</h3>
+              <ul>
+                <li>Create tasting events</li>
+                <li>Assign bottles and participants</li>
+                <li>Collect event-specific reviews</li>
+                <li>Upload event photos</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Expert Notes</h3>
+              <ul>
+                <li>Set curated tasting notes per bottle</li>
+                <li>Edit bottle descriptions</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="data" class="section reveal">
+          <div class="section-title">
+            <h2>Data Model</h2>
+            <p>Main tables and their roles.</p>
+          </div>
+          <div class="panel">
+            <div class="table-grid">
+              <div class="table-row">
+                <div class="cell head">Table</div>
+                <div class="cell head">Purpose</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">bottles</div>
+                <div class="cell">Inventory items and metadata</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">users</div>
+                <div class="cell">Tasting participants and reviewers</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">reviews</div>
+                <div class="cell">User reviews and scores for bottles</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">events</div>
+                <div class="cell">Tasting events and photo folders</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">event_participants</div>
+                <div class="cell">Users linked to events</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">event_drinks</div>
+                <div class="cell">Bottles linked to events</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">tasting_notes</div>
+                <div class="cell">Hierarchical tasting note taxonomy</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">community_notes</div>
+                <div class="cell">Notes tied to reviews</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">expert_notes</div>
+                <div class="cell">Curated notes tied to bottles</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="limits" class="section reveal">
+          <div class="section-title">
+            <h2>Limitations and Notes</h2>
+            <p>Operational constraints to keep in mind.</p>
+          </div>
+          <div class="grid-2">
+            <div class="panel">
+              <h3>Security and Auth</h3>
+              <ul>
+                <li>No authentication or role checks</li>
+                <li>CORS is enabled for all origins</li>
+                <li>Admin page is a public route</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Data and Validation</h3>
+              <ul>
+                <li>SQLite is local file based</li>
+                <li>Route inputs are lightly validated</li>
+                <li>Inventory sorting uses raw column names</li>
+                <li>Events use name + date to build folder paths</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>External Services</h3>
+              <ul>
+                <li>OpenAI calls require <span class="mono">OPENAI_KEY</span></li>
+                <li>DuckDuckGo image search needs network access</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>Portions of this documentation were generated by OpenAI's Codex Assistant</span>.</p>
+      </footer>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
