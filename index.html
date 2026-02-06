@@ -31,7 +31,7 @@
             <ul>
               <li>Install Python deps from <span class="mono">requirements.txt</span></li>
               <li>Run <span class="mono">python app.py</span> in <span class="mono">bar_companion</span></li>
-              <li>Ensure <span class="mono">secrets.json</span> contains <span class="mono">OPENAI_KEY</span></li>
+              <li>Ensure <span class="mono">secrets.json</span> contains <span class="mono">OPENAI_KEY</span> (descriptions, notes, distilleries)</li>
               <li>SQLite DB at <span class="mono">./database/bar_companion.db</span></li>
               <li>Uploads stored under <span class="mono">./database_images</span></li>
             </ul>
@@ -48,7 +48,7 @@
           <div class="grid-1">
             <div class="panel">
               <p>
-                The Bar Companion is a Flask-based web app for managing a spirits collection and tasting experiences: it stores bottle inventory in a SQLite database, supports adding bottles with images and descriptions, tracks users and their reviews/tasting notes, and exposes pages/APIs for inventory browsing, user profiles, and event-based tastings (with client and console views for running events).
+                The Bar Companion is a Flask-based web app for managing a spirits collection and tasting experiences: it stores bottle inventory in a SQLite database, supports adding bottles with images and descriptions, tracks users and their reviews/tasting notes, exposes pages/APIs for inventory browsing, user profiles, and event-based tastings (with client and console views for running events), and adds a distillery catalog with a globe view.
               </p>
             </div>
           </div>
@@ -67,6 +67,7 @@
                 <li>Add bottles with images and descriptions</li>
                 <li>Auto-generate bottle descriptions</li>
                 <li>Mark bottles unavailable</li>
+                <li>Flag bottles as special</li>
               </ul>
             </div>
             <div class="panel">
@@ -85,6 +86,15 @@
                 <li>Assign bottles and participants</li>
                 <li>Collect event-specific reviews</li>
                 <li>Upload event photos</li>
+              </ul>
+            </div>
+            <div class="panel">
+              <h3>Distilleries</h3>
+              <ul>
+                <li>Browse distillery catalog and globe view</li>
+                <li>Auto-populate distillery metadata</li>
+                <li>Attach and update distillery images</li>
+                <li>Merge duplicate distilleries</li>
               </ul>
             </div>
             <div class="panel">
@@ -110,7 +120,11 @@
               </div>
               <div class="table-row">
                 <div class="cell">bottles</div>
-                <div class="cell">Inventory items and metadata</div>
+                <div class="cell">Inventory items and metadata (availability, special, distillery mapping)</div>
+              </div>
+              <div class="table-row">
+                <div class="cell">distilleries</div>
+                <div class="cell">Distillery metadata and geo coordinates</div>
               </div>
               <div class="table-row">
                 <div class="cell">users</div>
@@ -174,8 +188,9 @@
             <div class="panel">
               <h3>External Services</h3>
               <ul>
-                <li>OpenAI calls require <span class="mono">OPENAI_KEY</span></li>
+                <li>OpenAI calls (descriptions, notes, distilleries) require <span class="mono">OPENAI_KEY</span></li>
                 <li>DuckDuckGo image search needs network access</li>
+                <li>Distillery refresh uses OpenStreetMap Nominatim (network required)</li>
               </ul>
             </div>
           </div>

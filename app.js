@@ -13,12 +13,23 @@
     method: "GET",
     path: "/inventory",
     summary: "Inventory listing with filters and sorting",
-    params: "Query: brand, type, subtype, sort_by (default brand), order (asc|desc)",
+    params:
+      "Query: brand, type, subtype, special=1, hide_special=1, sort_by (default brand), order (asc|desc)",
   },
   {
     method: "GET",
     path: "/users",
     summary: "Users page with their reviews",
+  },
+  {
+    method: "GET",
+    path: "/distilleries",
+    summary: "Distillery catalog and search",
+  },
+  {
+    method: "GET",
+    path: "/distilleries/globe",
+    summary: "Interactive globe view of distilleries",
   },
   {
     method: "GET",
@@ -28,19 +39,21 @@
   {
     method: "GET",
     path: "/event",
-    summary: "Event console view. This page has the intention of being run on a central device, showing all the whiskeys, reviews and photos from the event.",
+    summary:
+      "Event page. version=client shows login; version=console shows all bottles, reviews, and photos.",
     params: "Query: id, version=client|console",
   },
   {
     method: "GET",
     path: "/event_client",
-    summary: "Event client view. This page has the intention of being run on user devices. This removes the current reviews and ratings of bottles to leave the tasting un-biased.",
+    summary:
+      "Event client view for participants; hides existing reviews and ratings.",
     params: "Query: id; requires user_id cookie",
   },
   {
     method: "GET",
     path: "/bartender",
-    summary: "Admin console with table dump/",
+    summary: "Admin console with table data, distillery images, and merge tools",
   },
   {
     method: "GET",
@@ -62,7 +75,7 @@ const apiRoutes = [
     path: "/api/add_bottle",
     summary: "Create a new bottle record",
     params:
-      "JSON: brand, name, abv, spirit_type, subtype (optional), description (optional), photo (optional base64 data URL)",
+      "JSON: brand, name, abv, spirit_type, subtype (optional), description (optional), photo (optional base64 data URL), available (optional), special (optional)",
     returns: "201 with {message, id}",
     notes: "If description is empty, it is generated via OpenAI.",
   },
@@ -70,14 +83,14 @@ const apiRoutes = [
     method: "GET",
     path: "/get_images",
     summary: "Fetch candidate bottle images",
-    params: "Query: brand, name",
+    params: "Query: brand, name, type (optional suffix)",
     returns: "{query, images:[data URLs]}",
   },
   {
     method: "POST",
     path: "/api/remove_entry",
     summary: "Delete a record from a table",
-    params: "JSON: table, id",
+    params: "JSON: table, id (number, list, or comma-separated string)",
   },
   {
     method: "POST",
@@ -87,9 +100,28 @@ const apiRoutes = [
   },
   {
     method: "POST",
+    path: "/api/update_bottle_flags",
+    summary: "Update bottle availability or special flags",
+    params: "JSON: id, available (0|1), special (0|1)",
+  },
+  {
+    method: "POST",
     path: "/api/add_user",
     summary: "Create a user",
     params: "JSON: name, photo (optional base64 data URL)",
+  },
+  {
+    method: "POST",
+    path: "/api/update_distillery_image",
+    summary: "Upload a distillery image",
+    params: "JSON: distillery_id, photo (base64 data URL)",
+    returns: "{message, image_path}",
+  },
+  {
+    method: "POST",
+    path: "/api/merge_distilleries",
+    summary: "Merge distilleries and reassign bottles",
+    params: "JSON: primary_id, secondary_id",
   },
   {
     method: "POST",
@@ -98,6 +130,7 @@ const apiRoutes = [
     params:
       "JSON: name (user name or id), review_text, notes (array), score (0-10), bottle_id, event_id (optional)",
     returns: "201 with {message, review_id}",
+    notes: "Notes array is required; empty values may fail.",
   },
   {
     method: "GET",
@@ -117,12 +150,14 @@ const apiRoutes = [
     path: "/api/add_bottles_to_event",
     summary: "Assign bottles to an event",
     params: "Form: event_id, bottle_ids (comma-separated)",
+    notes: "Redirects to referrer on success.",
   },
   {
     method: "POST",
     path: "/api/add_users_to_event",
     summary: "Assign users to an event",
     params: "Form: event_id, user_ids (comma-separated)",
+    notes: "Redirects to referrer on success.",
   },
   {
     method: "POST",
@@ -136,18 +171,36 @@ const apiRoutes = [
     path: "/api/upload_event_photo_file",
     summary: "Upload event photo (file)",
     params: "Form: event_id, image_file",
+    notes: "Redirects to referrer on success.",
   },
   {
     method: "POST",
     path: "/api/upload_event_photo_b64",
     summary: "Upload event photo (base64)",
     params: "Form: event_id, image_data (data URL)",
+    returns: "{message, file_path}",
   },
   {
     method: "POST",
     path: "/api/edit_expert_notes",
     summary: "Update expert notes and description",
     params: "JSON: bottle_id, description (optional), notes (array)",
+  },
+  {
+    method: "POST",
+    path: "/api/refresh",
+    summary: "Refresh descriptions or expert notes",
+    params: "Query: id=descriptions|notes, limit (optional)",
+    returns: "{updated, skipped, errors}",
+    notes: "Uses OpenAI and only fills missing data.",
+  },
+  {
+    method: "POST",
+    path: "/api/refresh_distilleries",
+    summary: "Populate distilleries from brands",
+    params: "Query: limit (optional)",
+    returns: "{updated}",
+    notes: "Uses OpenAI and OpenStreetMap Nominatim.",
   },
   {
     method: "GET",
@@ -168,13 +221,21 @@ const apiRoutes = [
     path: "/database_images/[path]",
     summary: "Serve uploaded images",
     params: "path",
-    returns: "Image as a Base64 encoded string",
+    returns: "Image file",
   },
   {
     method: "POST",
     path: "/modal/bottle",
     summary: "Returns bottle details modal HTML",
     params: "JSON: bottle_id",
+    returns: "HTML fragment",
+  },
+  {
+    method: "POST",
+    path: "/modal/distillery",
+    summary: "Returns distillery details modal HTML",
+    params: "JSON: distillery_id",
+    returns: "HTML fragment",
   },
 ];
 
@@ -255,3 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
   setupFilter();
   setupReveal();
 });
+
+
+
